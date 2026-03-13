@@ -34,7 +34,8 @@ matlabrun('generateDataset_01.m')
 MATLAB → File → New → Live Script → paste S2WPILS.m → Run
 
 Step 3 — Set your dataset path (Section 1)
-matlab% Fashion-MNIST (default):
+matlab
+% Fashion-MNIST (default):
 Label = importdata("...\Dataset\fashion_mnistnumY.mat");
 X     = importdata("...\Dataset\fashion_mnistX.mat");
 
@@ -92,43 +93,43 @@ All settings are defined in the `cfg` structure — no parameters are hidden els
 For the synthetic binary digit dataset (0 vs 1), the following configuration provides stable training and good performance:
 
 matlab
+
 cfg.AE_NEURONS     = [128, 64, 32];
 cfg.CLS_NEURONS    = 64;
 cfg.FUSION_NEURONS = 256;
 cfg.MAX_SUBNET     = 2;
 cfg.SAMPLE_RATIO   = 0.8;
 
-## System Architecture
+## Training Pipeline
+
 
 Original Data
-      │
-      ▼
- Random Sample (per subsystem, ratio = SAMPLE_RATIO)
-      │
-      ├────────────────────────────────┐
-      ▼                                ▼
- FORWARD LEARNING               BACKWARD LEARNING
- Stacked PILAE layers           Label-driven reverse pass
- (sparse AE init → FISTA/ADMM)  (pseudoinverse fine-tuning)
-      │                                │
-      └──────────┬─────────────────────┘
-                 ▼
-         FEATURE FUSION
-         Concatenate forward + backward features
-         Grid-search best (l1, l2) layer combination
-                 │
-                 ▼
-           Classifier
-         (pseudoinverse, closed-form)
-           │
-      ─ ─ ─ repeat MAX_SUBNET times ─ ─ ─
-                 │
-                 ▼
-         Ensemble Sum
-         (soft voting across all subsystems)
-                 │
-                 ▼
-         Final Prediction
+│
+▼
+Random Sample (per subsystem, ratio = SAMPLE_RATIO)
+│
+├───────────────────────────────────────────┐
+▼ ▼
+FORWARD LEARNING BACKWARD LEARNING
+Stacked PILAE layers Label-driven reverse pass
+(sparse AE init → FISTA / ADMM) (pseudoinverse fine-tuning)
+│ │
+└───────────────┬───────────────────────────┘
+▼
+FEATURE FUSION
+Concatenate forward + backward features
+Grid-search best (l1, l2) layer combination
+│
+▼
+Classifier (pseudoinverse, closed-form)
+│
+── repeat MAX_SUBNET times ──
+│
+▼
+Ensemble Sum (soft voting)
+│
+▼
+Final Prediction
 
 ## Local Functions
 
@@ -161,7 +162,7 @@ Original Data
 Both **FISTA** and **ADMM** are used to solve the same **LASSO optimization problem** for initializing the encoder weights.
 
 $$
-\min_x \; \|Ax - b\|^2 + \lambda \|x\|_1
+\min_x \; \|WH - X\|^2 + \lambda \|x\|_r
 $$
 
 This formulation promotes **sparse encoder weights**, which improves feature extraction in the autoencoder layers.
