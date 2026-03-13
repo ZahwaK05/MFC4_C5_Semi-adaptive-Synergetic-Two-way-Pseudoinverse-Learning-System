@@ -160,7 +160,9 @@ Original Data
 
 Both **FISTA** and **ADMM** are used to solve the same **LASSO optimization problem** for initializing the encoder weights.
 
-\min_x \; \|A x - b\|^2 + \lambda \|x\|_1
+$$
+\min_x \; \|Ax - b\|^2 + \lambda \|x\|_1
+$$
 
 This formulation promotes **sparse encoder weights**, which improves feature extraction in the autoencoder layers.
 
