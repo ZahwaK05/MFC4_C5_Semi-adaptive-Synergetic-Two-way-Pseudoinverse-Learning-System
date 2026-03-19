@@ -101,35 +101,36 @@ cfg.MAX_SUBNET     = 2;
 cfg.SAMPLE_RATIO   = 0.8;
 
 ## Training Pipeline
-
-
 Original Data
-│
-▼
-Random Sample (per subsystem, ratio = SAMPLE_RATIO)
-│
-├───────────────────────────────────────────┐
-▼ ▼
-FORWARD LEARNING BACKWARD LEARNING
-Stacked PILAE layers Label-driven reverse pass
-(sparse AE init → FISTA / ADMM) (pseudoinverse fine-tuning)
-│ │
-└───────────────┬───────────────────────────┘
-▼
-FEATURE FUSION
-Concatenate forward + backward features
-Grid-search best (l1, l2) layer combination
-│
-▼
-Classifier (pseudoinverse, closed-form)
-│
-── repeat MAX_SUBNET times ──
-│
-▼
-Ensemble Sum (soft voting)
-│
-▼
-Final Prediction
+   │
+   ├── Random Sampling (per subsystem, ratio = SAMPLE_RATIO)
+   │
+   ├── Forward Learning
+   │      └── Stacked PILAE Layers
+   │             ├── Label-driven reverse pass 
+   │             │      (sparse AE init → FISTA / ADMM)
+   │             └── Pseudoinverse fine-tuning
+   │
+   ├── Backward Learning
+   │
+   ├── Feature Fusion
+   │      └── Concatenate forward + backward features
+   │
+   ├── Hyperparameter Optimization
+   │      └── Grid search for best (l1, l2) layer combination
+   │
+   ├── Classifier
+   │      └── Pseudoinverse-based (closed-form solution)
+   │
+   ├── Iterative Subnet Training
+   │      └── Repeat for MAX_SUBNET times
+   │
+   ├── Ensemble Learning
+   │      └── Sum aggregation (soft voting)
+   │
+   └── Final Prediction
+
+
 
 ## Local Functions
 
