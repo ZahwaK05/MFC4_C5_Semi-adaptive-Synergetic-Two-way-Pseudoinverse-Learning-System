@@ -101,6 +101,7 @@ cfg.MAX_SUBNET     = 2;
 cfg.SAMPLE_RATIO   = 0.8;
 
 ## Training Pipeline
+<pre>
 Original Data
 │
 ├── Random Sampling (per subsystem, ratio = SAMPLE_RATIO)
@@ -128,7 +129,7 @@ Original Data
 │   └── Sum aggregation (soft voting)
 │
 └── Final Prediction
-
+</pre>
 
 
 ## Local Functions
